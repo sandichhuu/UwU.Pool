@@ -58,8 +58,6 @@ namespace UwU
                 Debug.LogWarning("Warning ! There are no free item, add new item !");
             }
 
-            freeItem.isFree = false;
-
             this.busy.Add(itemHash);
 
             var requestedItem = (T)freeItem.obj;
@@ -75,7 +73,6 @@ namespace UwU
             if (itemBusyIndex >= 0)
             {
                 var poolItem = this.itemDomain[itemHash];
-                poolItem.isFree = true;
 
                 this.busy.RemoveAt(itemBusyIndex);
                 this.free.Enqueue(itemHash);
@@ -163,30 +160,37 @@ namespace UwU
             return Request();
         }
 
-        public void ReturnItemUnsafe(object objectToReturn)
+        public void ReturnItemToPool(object objectToReturn)
         {
             ReturnItem((T)objectToReturn);
         }
     }
 
-    public class PoolItem
+    internal sealed class PoolItem
     {
-        public readonly int instanceId;
-        public readonly object obj;
-        public bool isFree;
+        public int instanceId;
+        public object obj;
 
         public PoolItem(object obj)
         {
-            this.isFree = true;
+            SetItem(obj);
+        }
+
+        public void SetItem(object obj)
+        {
             this.obj = obj;
             this.instanceId = obj.GetHashCode();
         }
+    }
+
+    internal sealed class PoolOfPoolItem : Pool<PoolItem>
+    {
     }
 
     public interface IPool
     {
         object RequestUnsafe();
 
-        void ReturnItemUnsafe(object objectToReturn);
+        void ReturnItemToPool(object objectToReturn);
     }
 }
