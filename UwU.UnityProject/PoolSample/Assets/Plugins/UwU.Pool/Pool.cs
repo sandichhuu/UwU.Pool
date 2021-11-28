@@ -14,40 +14,53 @@ namespace UwU
 
         public delegate void ItemEvent(T item);
 
-        private Queue<PoolItem> free;
-        private Dictionary<int, PoolItem> busy;
+        private Queue<int> free;
+        private List<int> busy;
+        private Dictionary<int, PoolItem> itemDomain;
 
         private T sample;
 
         public void Initialize(T sample, int capacity = 16)
         {
             this.sample = sample;
-            this.free = new Queue<PoolItem>(capacity);
-            this.busy = new Dictionary<int, PoolItem>(capacity);
+            this.free = new Queue<int>(capacity);
+            this.busy = new List<int>(capacity);
+            this.itemDomain = new Dictionary<int, PoolItem>();
 
             var instances = SpawnInstanceBuck(capacity);
             for (var i = 0; i < capacity; i++)
             {
-                this.free.Enqueue(BuildNewPoolItem(instances[i]));
+                var poolItem = BuildNewPoolItem(instances[i]);
+                var poolItemHash = poolItem.instanceId;
+
+                this.free.Enqueue(poolItemHash);
+                this.itemDomain.Add(poolItemHash, poolItem);
             }
         }
 
         public T Request()
         {
+            var itemHash = -1;
             PoolItem freeItem = null;
 
             if (this.free.Count > 0)
-                freeItem = this.free.Dequeue();
+            {
+                itemHash = this.free.Dequeue();
+                freeItem = this.itemDomain[itemHash];
+            }
 
             if (freeItem == null)
             {
                 freeItem = BuildNewPoolItem(SpawnInstance());
+                itemHash = freeItem.instanceId;
+                this.itemDomain.Add(itemHash, freeItem);
+
                 Debug.LogWarning("Warning ! There are no free item, add new item !");
             }
 
             freeItem.isFree = false;
 
-            this.busy.Add(freeItem.uid, freeItem);
+            this.busy.Add(itemHash);
 
             var requestedItem = (T)freeItem.obj;
             this.onItemRequested?.Invoke(requestedItem);
@@ -56,20 +69,22 @@ namespace UwU
 
         public void ReturnItem(T item)
         {
-            var uid = item.GetHashCode();
-            if (this.busy.ContainsKey(uid))
+            var itemHash = item.GetHashCode();
+            var itemBusyIndex = this.busy.IndexOf(itemHash);
+
+            if (itemBusyIndex >= 0)
             {
-                var poolItem = this.busy[uid];
+                var poolItem = this.itemDomain[itemHash];
                 poolItem.isFree = true;
 
-                this.busy.Remove(uid);
-                this.free.Enqueue(poolItem);
+                this.busy.RemoveAt(itemBusyIndex);
+                this.free.Enqueue(itemHash);
 
                 this.onItemReturnToPool?.Invoke(item);
             }
             else
             {
-                Debug.LogWarning($"The item with [uid: {uid}] is not in using, recheck please !");
+                Debug.LogWarning($"The item with [uid: {itemHash}] is not in using, recheck please !");
             }
         }
 
@@ -156,7 +171,7 @@ namespace UwU
 
     public class PoolItem
     {
-        public readonly int uid;
+        public readonly int instanceId;
         public readonly object obj;
         public bool isFree;
 
@@ -164,7 +179,7 @@ namespace UwU
         {
             this.isFree = true;
             this.obj = obj;
-            this.uid = obj.GetHashCode();
+            this.instanceId = obj.GetHashCode();
         }
     }
 

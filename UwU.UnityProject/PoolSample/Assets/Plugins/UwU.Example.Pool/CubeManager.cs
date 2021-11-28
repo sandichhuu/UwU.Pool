@@ -13,13 +13,14 @@ namespace UwU.Pool.Example
         private void Awake()
         {
             this.cubePool = new CubePool();
-            this.cubePool.Initialize(this.cubePrefab, 1);
-
             this.cubePool.onNewItemCreated += OnNewItemCreated;
+
+            this.cubePool.Initialize(this.cubePrefab, 10);
         }
 
         private void OnNewItemCreated(CubeBehaviour item)
         {
+            Debug.Log(".");
             item.SetPool(this.cubePool);
         }
 
