@@ -51,17 +51,17 @@ public CubeBehaviour RequestObjectFromPool()
 ```csharp
 public class CubeBehaviour : MonoBehaviour
 {
-  private IPool pool;
+    private IPool pool;
 
-  public void SetPool(IPool pool)
-  {
-      this.pool = pool;
-  }
+    public void SetPool(IPool pool)
+    {
+        this.pool = pool;
+    }
 
-  public void ReturnToPool()
-  {
-      this.pool.ReturnItemToPool(this);
-  }
+    public void ReturnToPool()
+    {
+        this.pool.ReturnItemToPool(this);
+    }
 }
 ```
 
