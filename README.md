@@ -28,8 +28,20 @@ public class CubeManager : MonoBehaviour
     {
         this.cubePool = new CubePool();
         this.cubePool.onNewItemCreated += OnNewItemCreated;
-
+        this.cubePool.onItemRequested += OnItemRequested;
+        this.cubePool.onItemReturnToPool += OnItemReturnToPool;
+        
         this.cubePool.Initialize(this.cubePrefab, 10);
+    }
+    
+    private void OnItemRequested(CubeBehaviour item)
+    {
+        // Do something hentai when item is requested
+    }
+
+    private void OnItemReturnToPool(CubeBehaviour item)
+    {
+        // Do something hentai when item return to pool
     }
 
     private void OnNewItemCreated(CubeBehaviour item)
