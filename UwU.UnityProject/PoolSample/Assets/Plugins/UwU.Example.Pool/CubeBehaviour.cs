@@ -24,10 +24,15 @@ namespace UwU.Pool.Example
             if (this.timeCounter >= 1f)
             {
                 this.gameObject.SetActive(false);
-                this.pool.ReturnItemUnsafe(this);
+                ReturnToPool();
             }
 
             this.transform.Rotate(Vector3.one);
+        }
+
+        public void ReturnToPool()
+        {
+            this.pool.ReturnItemToPool(this);
         }
     }
 }
