@@ -14,13 +14,24 @@ namespace UwU.Pool.Example
         {
             this.cubePool = new CubePool();
             this.cubePool.onNewItemCreated += OnNewItemCreated;
+            this.cubePool.onItemRequested += OnItemRequested;
+            this.cubePool.onItemReturnToPool += OnItemReturnToPool;
 
             this.cubePool.Initialize(this.cubePrefab, 10);
         }
 
+        private void OnItemRequested(CubeBehaviour item)
+        {
+            // Do something hentai when item is requested
+        }
+
+        private void OnItemReturnToPool(CubeBehaviour item)
+        {
+            // Do something hentai when item return to pool
+        }
+
         private void OnNewItemCreated(CubeBehaviour item)
         {
-            Debug.Log(".");
             item.SetPool(this.cubePool);
         }
 
@@ -31,10 +42,16 @@ namespace UwU.Pool.Example
             if (this.timeCounter >= 1.0f)
             {
                 this.timeCounter = 0f;
-                var cubeInstance = this.cubePool.Request();
+                var cubeInstance = RequestObjectFromPool();
+
                 cubeInstance.gameObject.SetActive(true);
                 cubeInstance.transform.position = Vector3.zero;
             }
+        }
+
+        public CubeBehaviour RequestObjectFromPool()
+        {
+            return this.cubePool.Request();
         }
     }
 }
