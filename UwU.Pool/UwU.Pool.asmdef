@@ -1,0 +1,17 @@
+{
+    "name": "UwU.Pool",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3aefddf9bea82ef4e913bace0068af8c",
+        "GUID:bb48807777796734080929b68a166652"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
